@@ -2,8 +2,17 @@ export default class Client{
 
 
     constructor(url){
+
         this.server_url = "http://localhost:8000"
-        this.url = url
+        const regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+        const match = url.match(regExp);
+
+        if (match && match[1]) {
+            this.videoId = match[1];
+        } else {
+            throw "Please select a youtube video"
+        }
+
     }
 
     async sendRequest(req, question, uid=-1){

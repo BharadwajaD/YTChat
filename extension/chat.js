@@ -10,7 +10,7 @@ const tabs = await chrome.tabs.query({currentWindow: true, active: true})
 const url = tabs[0].url
 
 const client = new Client(url)
-const uid = await client.sendRequest('', url)
+const uid = await client.sendRequest('', client.videoId)
 
 // Add a message to the chat
 function addMessage(message, sender) {
