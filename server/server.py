@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import logging
 
 from dataStore import DataStore
 
@@ -11,7 +12,7 @@ ds = DataStore()
 @app.route('/', methods=['POST'])
 def start():
     # Fetch transcript from YouTube (not implemented yet)
-    uid = ds.new_user()
+    uid = ds.insert_user()
     ytube_url = request.get_data().decode('utf-8')
     return jsonify(uid)
 
@@ -20,9 +21,10 @@ def question():
 
     ques = request.get_data().decode('utf-8')
     uid = request.headers['User']
-    ans = 'this is the answer to the question' + ques # generate using nlp model
+    ans = 'Generated answer ....'
 
-    ds.get_user(uid).chat_insert(ques, ans)
+    ds.insert_message(uid, ques, ans)
+    print(ds)
 
     return jsonify(ans)
 
