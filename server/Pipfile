@@ -11,6 +11,7 @@ transformers = "*"
 torch = "*"
 torchvision = "*"
 torchaudio = "*"
+openai = "*"
 
 [dev-packages]
 
