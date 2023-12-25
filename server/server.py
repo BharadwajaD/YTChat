@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)
 
 ds = DataStore()
-qa_model = QAModel()
+qa_model = QAModel() # use pool
 
 @app.route('/', methods=['POST'])
 def start():

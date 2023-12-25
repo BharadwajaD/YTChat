@@ -28,7 +28,6 @@ class DataStore:
     def insert_message(self, uid, question, answer):
         user_id = str(uid)
         if user_id not in self.data:
-            print('user: '+user_id+' not present in datastore')
             self.data[user_id] = Chat()
 
         self.data[user_id].add_message(question, answer)

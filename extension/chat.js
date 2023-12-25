@@ -24,8 +24,7 @@ function addMessage(message, sender) {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// Handle the "Send" button click
-sendButton.addEventListener('click', async function () {
+async function newQuestion(){
     const userQuestion = userInput.value.trim();
     if (userQuestion !== '') {
 
@@ -35,4 +34,17 @@ sendButton.addEventListener('click', async function () {
         addMessage(ans, 'bot')
         userInput.value = '';
     }
+}
+
+userInput.addEventListener('keypress', async function(e) {
+    if(e.key == 'Enter'){
+        e.preventDefault()
+        await newQuestion()
+    }
+})
+
+// Handle the "Send" button click
+sendButton.addEventListener('click', async function () {
+    await newQuestion()
 });
+
