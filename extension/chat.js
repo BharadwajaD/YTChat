@@ -9,7 +9,15 @@ const sendButton = document.getElementById('sendButton');
 const tabs = await chrome.tabs.query({currentWindow: true, active: true})
 const url = tabs[0].url
 
-const client = new Client(url)
+let client
+
+try{
+    client = new Client(url)
+}catch(e) {
+    console.fatal(e)
+    //TODO: should display this error msg on popup
+}
+
 const uid = await client.sendRequest('', client.videoId)
 
 // Add a message to the chat
@@ -20,7 +28,6 @@ function addMessage(message, sender) {
     messageDiv.textContent = message;
     chat.appendChild(messageDiv);
 
-    // Scroll to the bottom to show the latest message
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
