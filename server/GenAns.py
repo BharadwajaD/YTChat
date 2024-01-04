@@ -1,14 +1,22 @@
+import os
 from transformers import pipeline, AutoTokenizer, AutoModel
+from openai import OpenAI
 import torch
 
 class QAModel:
     #TODO: Some better models instead of roberta to generate answer
-    def __init__(self, top_k = 3, retribert_model="distilbert-base-cased-distilled-squad", roberta_model="deepset/roberta-base-squad2"):
+    def __init__(self, top_k = 3, isOpenai = False, embedding_model="distilbert-base-cased-distilled-squad", answering_model="deepset/roberta-base-squad2"):
 
         self.top_k = top_k
-        self.retribert_tokenizer = AutoTokenizer.from_pretrained(retribert_model)
-        self.retribert_model = AutoModel.from_pretrained(retribert_model)
-        self.roberta_qa_pipeline = pipeline("question-answering", model=roberta_model, tokenizer=roberta_model)
+        self.openai_key = os.environ.get('API_KEY')
+        self.openai_client = OpenAI(api_key = self.openai_key)
+        self.isOpenai = isOpenai
+
+        self.embedder_tokenizer = AutoTokenizer.from_pretrained(embedding_model)
+        self.embedder_model = AutoModel.from_pretrained(embedding_model)
+
+        self.answering_pipeline = pipeline("question-answering", model=answering_model, tokenizer=answering_model)
+
 
     def add_context(self, context):
         self.context = context
@@ -18,7 +26,7 @@ class QAModel:
 
     def split_into_sentences(self, context):
         # Split the context into sentences
-        sentences = context.split(". ")  # You may need a more sophisticated sentence tokenizer
+        sentences = context.split("::")  # You may need a more sophisticated sentence tokenizer
         return sentences
 
     # compute embeddings for the given sentences
@@ -27,8 +35,8 @@ class QAModel:
         # embeddings for context
         context_embeddings = []
         for sentence in sentences:
-            inputs = self.retribert_tokenizer(sentence, return_tensors="pt", max_length=512, truncation=True)
-            outputs = self.retribert_model(**inputs)
+            inputs = self.embedder_tokenizer(sentence, return_tensors="pt", max_length=512, truncation=True)
+            outputs = self.embedder_model(**inputs)
             embeddings = torch.mean(outputs.last_hidden_state, dim=1).squeeze().detach()
             context_embeddings.append(embeddings)
 
@@ -56,12 +64,23 @@ class QAModel:
 
     def answer(self, question):
 
+
+        if self.isOpenai:
+
+            response = self.openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo-16k",
+                    messages=question,
+                    )
+            answer = response.choices[0].message.content
+            return answer
+
+
         question_embedding = self.compute_embeddings([question])
         top_k_sentences = self.extract_top_k_similar_sentences(question_embedding)
-
         # Concatenate top k similar sentences with the question to form a new context
         new_context = ". ".join(top_k_sentences) + ". " + question
-        answer = self.roberta_qa_pipeline({
+
+        answer = self.answering_pipeline({
             'question': question,
             'context': new_context
             })

@@ -19,6 +19,7 @@ try{
 }
 
 const uid = await client.sendRequest('', client.videoId)
+console.log(uid)
 
 // Add a message to the chat
 function addMessage(message, sender) {
@@ -36,8 +37,8 @@ async function newQuestion(){
     if (userQuestion !== '') {
 
         addMessage(userQuestion, 'user');
+        //const ans = "this is for css testing.. donot call the client... this is for css testing.. donot call the client...this is for css testing.. donot call the client...  "
         const ans = await client.getAnswer(userQuestion, uid)
-        console.log(ans)
         addMessage(ans, 'bot')
         userInput.value = '';
     }
@@ -52,6 +53,7 @@ userInput.addEventListener('keypress', async function(e) {
 
 // Handle the "Send" button click
 sendButton.addEventListener('click', async function () {
+    console.log('button clicked')
     await newQuestion()
 });
 

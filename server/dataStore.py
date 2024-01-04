@@ -3,15 +3,16 @@ from GenAns import QAModel
 class Chat:
     def __init__(self):
         self.messages = []
-        self.qa_model = QAModel() # use pool
+        self.qa_model = QAModel(top_k = 2, isOpenai=True) # use pool
 
     def add_context(self, context):
         self.qa_model.add_context(context)
-        self.messages.append({'Context': context})
+        self.messages.append({'role': 'system', 'content': context})
 
-    def add_message(self, question):
-        answer = self.qa_model.answer(question)
-        self.messages.append({question, answer})
+    def answer_and_add_message(self, question):
+        self.messages.append({'role': 'user', 'content': question})
+        answer = self.qa_model.answer(self.messages)
+        self.messages.append({'role': 'assistant', 'content': answer})
         return answer
 
     def __str__(self):
@@ -35,12 +36,12 @@ class DataStore:
 
         return user_id
 
-    def insert_message(self, uid, question):
+    def answer_and_insert_message(self, uid, question):
         user_id = str(uid)
         if user_id not in self.data:
             self.data[user_id] = Chat()
 
-        answer = self.data[user_id].add_message(question)
+        answer = self.data[user_id].answer_and_add_message(question)
         return answer
 
 

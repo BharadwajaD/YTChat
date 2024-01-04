@@ -20,11 +20,11 @@ def start():
 
     #TODO: process the text more
     for tr in transcript_list:
-        transcript += tr['text']
+        transcript += '[{}]{}[{}]'.format(tr['start'],tr['text'],tr['duration'])
 
     context = """
     You are a chatbot for a video and you need to answer to the upcoming question 
-    based on the transcript of the video...
+    based on the transcript of the video which is in the form [startTime]Text[Duration]...
     Transcript: {}
     """.format(transcript)
 
@@ -36,7 +36,7 @@ def question():
 
     ques = request.get_data().decode('utf-8')
     uid = request.headers['User']
-    ans = ds.insert_message(uid, ques)
+    ans = ds.answer_and_insert_message(uid, ques)
 
     return jsonify(ans)
 

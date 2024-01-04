@@ -13,9 +13,13 @@ export default class Client{
             throw "Please select a youtube video"
         }
 
+        console.log("Client constructor"+this.videoId)
+
     }
 
     async sendRequest(req, question, uid=-1){
+
+        console.log('sendRequest '+question)
 
         let req_obj =  {
             'method': 'POST',
@@ -34,6 +38,7 @@ export default class Client{
     }
 
     async getAnswer(question, uid){
+        console.log(question)
         const ans = await this.sendRequest('question',question, uid)
         return ans
     }
