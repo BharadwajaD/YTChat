@@ -1,5 +1,4 @@
-import Client from "./client.js";
-
+import { getAnswer } from "./ansGen";
 
 const chatContainer = document.getElementById('chat-container');
 const chat = document.getElementById('chat-content');
@@ -8,18 +7,7 @@ const sendButton = document.getElementById('sendButton');
 
 const tabs = await chrome.tabs.query({currentWindow: true, active: true})
 const url = tabs[0].url
-
-let client
-
-try{
-    client = new Client(url)
-}catch(e) {
-    console.fatal(e)
-    //TODO: should display this error msg on popup
-}
-
-const uid = await client.sendRequest('', client.videoId)
-console.log(uid)
+await getAnswer('',true, url)
 
 // Add a message to the chat
 function addMessage(message, sender) {
@@ -37,8 +25,7 @@ async function newQuestion(){
     if (userQuestion !== '') {
 
         addMessage(userQuestion, 'user');
-        //const ans = "this is for css testing.. donot call the client... this is for css testing.. donot call the client...this is for css testing.. donot call the client...  "
-        const ans = await client.getAnswer(userQuestion, uid)
+        const ans = await getAnswer(userQuestion)
         addMessage(ans, 'bot')
         userInput.value = '';
     }
